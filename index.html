@@ -1,4 +1,168 @@
 <!DOCTYPE html>
-<html><head><title>EGP Attendance Dashboard</title><link rel='stylesheet' href='style.css'></head><body>
-<h1>EGP Attendance Dashboard</h1>
-<script src='config.js'></script><script src='api.js'></script><script src='attendance.js'></script></body></html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#011023" />
+  <title>EGP Attendance Dashboard</title>
+  <link rel="icon" href="assets/favicon.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="EGP Attendance">
+      <div class="brand-mark">
+        <img src="assets/logo.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid';" />
+        <span class="fallback-logo">EGP</span>
+      </div>
+      <div>
+        <p class="eyebrow">Euler's Golden Pie</p>
+        <h1>Attendance Dashboard</h1>
+      </div>
+    </a>
+
+    <div class="top-actions">
+      <div id="connectionBadge" class="connection-badge">
+        <span class="status-dot"></span>
+        <span id="connectionText">Connecting…</span>
+      </div>
+      <button id="refreshBtn" class="icon-button" type="button" title="Refresh data" aria-label="Refresh data">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20 6v5h-5M4 18v-5h5M18.7 9A7 7 0 0 0 6.3 6.3L4 9m16 6-2.3 2.7A7 7 0 0 1 5.3 15"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero-panel">
+      <div>
+        <p class="eyebrow">Pilot Study • 12 Sessions</p>
+        <h2>Mark today’s attendance.</h2>
+        <p class="hero-copy">Select a date, choose Present, Late, or Absent for each participant, then save.</p>
+      </div>
+
+      <div class="date-card">
+        <label for="sessionDate">Session date</label>
+        <input id="sessionDate" type="date" min="2026-08-06" />
+        <span id="sessionLabel">Session day</span>
+      </div>
+    </section>
+
+    <section class="stats-grid" aria-label="Attendance summary">
+      <article class="stat-card">
+        <span class="stat-label">Registered</span>
+        <strong id="registeredCount">0</strong>
+        <span class="stat-sub">participants</span>
+      </article>
+      <article class="stat-card stat-present">
+        <span class="stat-label">Present</span>
+        <strong id="presentCount">0</strong>
+        <span class="stat-sub">marked today</span>
+      </article>
+      <article class="stat-card stat-late">
+        <span class="stat-label">Late</span>
+        <strong id="lateCount">0</strong>
+        <span class="stat-sub">marked today</span>
+      </article>
+      <article class="stat-card stat-absent">
+        <span class="stat-label">Absent</span>
+        <strong id="absentCount">0</strong>
+        <span class="stat-sub">marked today</span>
+      </article>
+      <article class="stat-card">
+        <span class="stat-label">Unmarked</span>
+        <strong id="unmarkedCount">0</strong>
+        <span class="stat-sub">still remaining</span>
+      </article>
+    </section>
+
+    <section class="workspace">
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="searchInput" type="search" placeholder="Search participant by name…" autocomplete="off" />
+          <kbd>⌘ K</kbd>
+        </div>
+
+        <div class="toolbar-actions">
+          <button id="markAllPresentBtn" class="secondary-button" type="button">Mark all present</button>
+          <button id="clearAllBtn" class="ghost-button" type="button">Clear selections</button>
+        </div>
+      </div>
+
+      <div class="list-heading">
+        <div>
+          <h3>Participants</h3>
+          <p id="listMeta">Loading registrations…</p>
+        </div>
+        <span class="autosave-note">Changes save only when you press “Save Attendance”</span>
+      </div>
+
+      <div id="loadingState" class="state-card">
+        <div class="spinner"></div>
+        <h3>Loading participants</h3>
+        <p>Reading the registration sheet…</p>
+      </div>
+
+      <div id="errorState" class="state-card hidden">
+        <div class="state-icon">!</div>
+        <h3>Couldn’t load the dashboard</h3>
+        <p id="errorMessage">Check your Apps Script URL and deployment.</p>
+        <button id="retryBtn" class="primary-button compact" type="button">Try again</button>
+      </div>
+
+      <div id="emptyState" class="state-card hidden">
+        <div class="state-icon">0</div>
+        <h3>No matching participants</h3>
+        <p>Try another name or clear the search.</p>
+      </div>
+
+      <div id="participantList" class="participant-list hidden"></div>
+    </section>
+  </main>
+
+  <footer class="save-bar">
+    <div>
+      <strong id="saveSummary">0 of 0 participants marked</strong>
+      <span id="unsavedLabel">No unsaved changes</span>
+    </div>
+    <button id="saveBtn" class="primary-button" type="button" disabled>
+      <span id="saveBtnText">Save Attendance</span>
+      <span id="saveSpinner" class="button-spinner hidden"></span>
+    </button>
+  </footer>
+
+  <template id="participantTemplate">
+    <article class="participant-card">
+      <div class="participant-identity">
+        <div class="avatar"></div>
+        <div>
+          <h4 class="participant-name"></h4>
+          <p class="participant-id"></p>
+        </div>
+      </div>
+      <div class="status-group" role="group" aria-label="Attendance status">
+        <button type="button" class="status-button present" data-status="Present">
+          <span class="status-icon">✓</span> Present
+        </button>
+        <button type="button" class="status-button late" data-status="Late">
+          <span class="status-icon">◷</span> Late
+        </button>
+        <button type="button" class="status-button absent" data-status="Absent">
+          <span class="status-icon">×</span> Absent
+        </button>
+      </div>
+    </article>
+  </template>
+
+  <script src="config.js"></script>
+  <script src="api.js"></script>
+  <script src="attendance.js"></script>
+</body>
+</html>
