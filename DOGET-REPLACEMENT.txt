@@ -1,0 +1,39 @@
+// REPLACE ONLY your existing doGet(e) function in Code.gs with this.
+// Leave doPost(e) and every other registration function untouched.
+
+function doGet(e) {
+  const action = String((e && e.parameter && e.parameter.action) || 'status').toLowerCase();
+
+  try {
+    if (action === 'status') {
+      return jsonResponse(getStatus_());
+    }
+
+    if (action === 'dashboard') {
+      return jsonResponse(getAttendanceDashboard_(e.parameter.date));
+    }
+
+    if (action === 'save') {
+      const records = JSON.parse(e.parameter.records || '[]');
+      return jsonResponse(saveAttendance_(e.parameter.date, records));
+    }
+
+    if (action === 'leaderboard') {
+      return jsonResponse(getLeaderboardData_(e.parameter.date));
+    }
+
+    if (action === 'saveScore') {
+      const record = JSON.parse(e.parameter.record || '{}');
+      return jsonResponse(saveLeaderboardScore_(e.parameter.date, record));
+    }
+
+    if (action === 'deleteScore') {
+      return jsonResponse(deleteLeaderboardScore_(e.parameter.date, e.parameter.id));
+    }
+
+    return jsonResponse({ok:false, error:'Unknown action.'});
+  } catch (err) {
+    console.error(err);
+    return jsonResponse({ok:false, error:err.message || 'Server error.'});
+  }
+}

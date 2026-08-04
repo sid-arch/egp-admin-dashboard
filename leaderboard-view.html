@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#011023">
+  <title>EGP Leaderboard</title>
+  <link rel="icon" href="assets/favicon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="public-page">
+  <main class="public-shell">
+    <div class="public-brand">
+      <div class="brand-mark">
+        <img src="assets/logo.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid';">
+        <span class="fallback-logo">EGP</span>
+      </div>
+      <div>
+        <p class="eyebrow">Euler's Golden Pie</p>
+        <h1>Pilot Study Leaderboard</h1>
+      </div>
+    </div>
+
+    <section class="public-hero">
+      <p class="eyebrow">Cumulative Results</p>
+      <h2>Every digit counts.</h2>
+      <p>Scores are the combined total of all completed sessions.</p>
+      <div id="publicUpdated" class="public-updated">Loading latest results…</div>
+    </section>
+
+    <section class="public-leaderboard-card">
+      <div id="publicState" class="state-card">Loading leaderboard…</div>
+      <div id="publicLeaderboardList" class="leaderboard-list public-list hidden"></div>
+    </section>
+
+    <p class="privacy-note">Participant names are shortened for privacy.</p>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="api.js"></script>
+  <script src="public-leaderboard.js"></script>
+</body>
+</html>

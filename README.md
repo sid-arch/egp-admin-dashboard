@@ -1,7 +1,5 @@
-# EGP Attendance Dashboard
+# EGP Admin Dashboard v2
 
-A complete attendance system for the Euler's Golden Pie pilot study.
+Open `SETUP.md` and follow it in order.
 
-Open `SETUP.md` for installation instructions.
-
-The site runs in demo mode until a Google Apps Script `/exec` URL is entered in `config.js`.
+The website runs in demo mode until the Apps Script `/exec` URL is pasted into `config.js`.

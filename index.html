@@ -4,139 +4,158 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#011023" />
-  <title>EGP Attendance Dashboard</title>
+  <title>EGP Admin Dashboard</title>
   <link rel="icon" href="assets/favicon.png" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="ambient ambient-one"></div>
-  <div class="ambient ambient-two"></div>
-
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <header class="topbar">
-    <a class="brand" href="#" aria-label="EGP Attendance">
+    <div class="brand">
       <div class="brand-mark">
-        <img src="assets/logo.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid';" />
+        <img src="assets/logo.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid';">
         <span class="fallback-logo">EGP</span>
       </div>
       <div>
         <p class="eyebrow">Euler's Golden Pie</p>
-        <h1>Attendance Dashboard</h1>
+        <h1>Admin Dashboard</h1>
       </div>
-    </a>
+    </div>
 
     <div class="top-actions">
       <div id="connectionBadge" class="connection-badge">
         <span class="status-dot"></span>
         <span id="connectionText">Connecting…</span>
       </div>
-      <button id="refreshBtn" class="icon-button" type="button" title="Refresh data" aria-label="Refresh data">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M20 6v5h-5M4 18v-5h5M18.7 9A7 7 0 0 0 6.3 6.3L4 9m16 6-2.3 2.7A7 7 0 0 1 5.3 15"/>
-        </svg>
+      <button id="refreshBtn" class="icon-button" type="button" title="Refresh">
+        ↻
       </button>
     </div>
   </header>
 
   <main class="shell">
-    <section class="hero-panel">
-      <div>
-        <p class="eyebrow">Pilot Study • 12 Sessions</p>
-        <h2>Mark today’s attendance.</h2>
-        <p class="hero-copy">Select a date, choose Present, Late, or Absent for each participant, then save.</p>
-      </div>
+    <nav class="main-tabs" aria-label="Dashboard sections">
+      <button class="main-tab active" data-tab="attendance">Attendance</button>
+      <button class="main-tab" data-tab="leaderboard">Leaderboard</button>
+    </nav>
 
-      <div class="date-card">
-        <label for="sessionDate">Session date</label>
-        <input id="sessionDate" type="date" min="2026-08-06" />
-        <span id="sessionLabel">Session day</span>
-      </div>
-    </section>
-
-    <section class="stats-grid" aria-label="Attendance summary">
-      <article class="stat-card">
-        <span class="stat-label">Registered</span>
-        <strong id="registeredCount">0</strong>
-        <span class="stat-sub">participants</span>
-      </article>
-      <article class="stat-card stat-present">
-        <span class="stat-label">Present</span>
-        <strong id="presentCount">0</strong>
-        <span class="stat-sub">marked today</span>
-      </article>
-      <article class="stat-card stat-late">
-        <span class="stat-label">Late</span>
-        <strong id="lateCount">0</strong>
-        <span class="stat-sub">marked today</span>
-      </article>
-      <article class="stat-card stat-absent">
-        <span class="stat-label">Absent</span>
-        <strong id="absentCount">0</strong>
-        <span class="stat-sub">marked today</span>
-      </article>
-      <article class="stat-card">
-        <span class="stat-label">Unmarked</span>
-        <strong id="unmarkedCount">0</strong>
-        <span class="stat-sub">still remaining</span>
-      </article>
-    </section>
-
-    <section class="workspace">
-      <div class="toolbar">
-        <div class="search-wrap">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-          <input id="searchInput" type="search" placeholder="Search participant by name…" autocomplete="off" />
-          <kbd>⌘ K</kbd>
-        </div>
-
-        <div class="toolbar-actions">
-          <button id="markAllPresentBtn" class="secondary-button" type="button">Mark all present</button>
-          <button id="clearAllBtn" class="ghost-button" type="button">Clear selections</button>
-        </div>
-      </div>
-
-      <div class="list-heading">
+    <section id="attendanceTab" class="tab-panel active">
+      <section class="hero-panel">
         <div>
-          <h3>Participants</h3>
-          <p id="listMeta">Loading registrations…</p>
+          <p class="eyebrow">Pilot Study • 12 Sessions</p>
+          <h2>Mark attendance.</h2>
+          <p class="hero-copy">Choose a date, mark Present, Late, or Absent, then save.</p>
         </div>
-        <span class="autosave-note">Changes save only when you press “Save Attendance”</span>
-      </div>
+        <div class="date-card">
+          <label for="attendanceDate">Session date</label>
+          <input id="attendanceDate" type="date" min="2026-08-06">
+        </div>
+      </section>
 
-      <div id="loadingState" class="state-card">
-        <div class="spinner"></div>
-        <h3>Loading participants</h3>
-        <p>Reading the registration sheet…</p>
-      </div>
+      <section class="stats-grid">
+        <article class="stat-card"><span>Registered</span><strong id="registeredCount">0</strong><small>participants</small></article>
+        <article class="stat-card present-accent"><span>Present</span><strong id="presentCount">0</strong><small>marked</small></article>
+        <article class="stat-card late-accent"><span>Late</span><strong id="lateCount">0</strong><small>marked</small></article>
+        <article class="stat-card absent-accent"><span>Absent</span><strong id="absentCount">0</strong><small>marked</small></article>
+        <article class="stat-card"><span>Unmarked</span><strong id="unmarkedCount">0</strong><small>remaining</small></article>
+      </section>
 
-      <div id="errorState" class="state-card hidden">
-        <div class="state-icon">!</div>
-        <h3>Couldn’t load the dashboard</h3>
-        <p id="errorMessage">Check your Apps Script URL and deployment.</p>
-        <button id="retryBtn" class="primary-button compact" type="button">Try again</button>
-      </div>
+      <section class="workspace">
+        <div class="toolbar">
+          <input id="attendanceSearch" class="search-input" type="search" placeholder="Search participant by name…">
+          <div class="toolbar-actions">
+            <button id="markAllPresentBtn" class="secondary-button">Mark all present</button>
+            <button id="clearAttendanceBtn" class="ghost-button">Clear selections</button>
+          </div>
+        </div>
 
-      <div id="emptyState" class="state-card hidden">
-        <div class="state-icon">0</div>
-        <h3>No matching participants</h3>
-        <p>Try another name or clear the search.</p>
-      </div>
+        <div class="section-heading">
+          <div>
+            <h3>Participants</h3>
+            <p id="attendanceMeta">Loading…</p>
+          </div>
+        </div>
 
-      <div id="participantList" class="participant-list hidden"></div>
+        <div id="attendanceState" class="state-card">Loading participants…</div>
+        <div id="attendanceList" class="participant-list hidden"></div>
+      </section>
+
+      <div class="action-bar">
+        <div>
+          <strong id="attendanceSaveSummary">0 of 0 marked</strong>
+          <span id="attendanceUnsaved">No unsaved changes</span>
+        </div>
+        <button id="saveAttendanceBtn" class="primary-button" disabled>Save Attendance</button>
+      </div>
+    </section>
+
+    <section id="leaderboardTab" class="tab-panel">
+      <section class="hero-panel">
+        <div>
+          <p class="eyebrow">Cumulative Competition</p>
+          <h2>Record daily scores.</h2>
+          <p class="hero-copy">Each participant's daily digits are added to their running total.</p>
+        </div>
+        <div class="public-link-box">
+          <label>Parent / Participant View</label>
+          <div>
+            <input id="publicLink" readonly>
+            <button id="copyPublicLinkBtn" class="secondary-button">Copy link</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="leaderboard-layout">
+        <section class="score-entry-card">
+          <div class="section-heading compact-heading">
+            <div>
+              <h3>Add or update score</h3>
+              <p>One score per participant per date</p>
+            </div>
+          </div>
+
+          <label class="field-label" for="scoreDate">Session date</label>
+          <input id="scoreDate" class="field-input" type="date" min="2026-08-06">
+
+          <label class="field-label" for="participantSelect">Participant</label>
+          <select id="participantSelect" class="field-input">
+            <option value="">Choose a participant</option>
+          </select>
+
+          <label class="field-label" for="digitsInput">Digits correctly recalled</label>
+          <input id="digitsInput" class="field-input" type="number" min="0" step="1" placeholder="Example: 50">
+
+          <div id="existingScoreNote" class="info-note hidden"></div>
+
+          <button id="saveScoreBtn" class="primary-button full-width" disabled>Save Score</button>
+        </section>
+
+        <section class="leaderboard-card">
+          <div class="section-heading leaderboard-heading">
+            <div>
+              <h3>Overall Leaderboard</h3>
+              <p id="leaderboardMeta">Cumulative total across all sessions</p>
+            </div>
+            <button id="refreshLeaderboardBtn" class="ghost-button">Refresh</button>
+          </div>
+
+          <div id="leaderboardState" class="state-card">Loading leaderboard…</div>
+          <div id="leaderboardList" class="leaderboard-list hidden"></div>
+        </section>
+      </section>
+
+      <section class="daily-card">
+        <div class="section-heading">
+          <div>
+            <h3>Scores for selected date</h3>
+            <p id="dailyMeta">No scores yet</p>
+          </div>
+        </div>
+        <div id="dailyScoresList" class="daily-score-list"></div>
+      </section>
     </section>
   </main>
-
-  <footer class="save-bar">
-    <div>
-      <strong id="saveSummary">0 of 0 participants marked</strong>
-      <span id="unsavedLabel">No unsaved changes</span>
-    </div>
-    <button id="saveBtn" class="primary-button" type="button" disabled>
-      <span id="saveBtnText">Save Attendance</span>
-      <span id="saveSpinner" class="button-spinner hidden"></span>
-    </button>
-  </footer>
 
   <template id="participantTemplate">
     <article class="participant-card">
@@ -147,22 +166,16 @@
           <p class="participant-id"></p>
         </div>
       </div>
-      <div class="status-group" role="group" aria-label="Attendance status">
-        <button type="button" class="status-button present" data-status="Present">
-          <span class="status-icon">✓</span> Present
-        </button>
-        <button type="button" class="status-button late" data-status="Late">
-          <span class="status-icon">◷</span> Late
-        </button>
-        <button type="button" class="status-button absent" data-status="Absent">
-          <span class="status-icon">×</span> Absent
-        </button>
+      <div class="status-group">
+        <button class="status-button present" data-status="Present">✓ Present</button>
+        <button class="status-button late" data-status="Late">◷ Late</button>
+        <button class="status-button absent" data-status="Absent">× Absent</button>
       </div>
     </article>
   </template>
 
   <script src="config.js"></script>
   <script src="api.js"></script>
-  <script src="attendance.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
