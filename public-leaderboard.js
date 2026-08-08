@@ -14,7 +14,7 @@
       // Public leaderboard rules:
       // 1) Hide participants whose cumulative score is 0.
       // 2) Sort highest score first.
-      // 3) Equal scores share the same rank (competition ranking: 1, 2, 2, 4).
+      // 3) Equal scores share the same rank (dense ranking: 1, 2, 2, 3).
       const leaderboard = (data.leaderboard || [])
         .filter(s => Number(s.total || 0) > 0)
         .sort((a, b) => Number(b.total || 0) - Number(a.total || 0));
@@ -26,7 +26,7 @@
         const score = Number(s.total || 0);
 
         if (previousScore === null || score !== previousScore) {
-          currentRank = i + 1;
+          currentRank += 1;
         }
         previousScore = score;
 
